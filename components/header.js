@@ -15,7 +15,10 @@ export default function Header({ label="", onClickBtn=()=>{}, checkValidUser=()=
     if(status === 'authenticated') {
       if(hasCookie('jwt')) {
         if(router.isReady) {
-          socket.emit('setGitId', getCookie('jwt'), router?.query?.mode, router?.query?.roomId);
+          console.log('setting socket');
+          socket.auth.token = getCookie('jwt');
+          socket.connect();
+          socket.emit('setGitId', router?.query?.mode, router?.query?.roomId);
           checkValidUser(true);
         }
       } else {
@@ -39,7 +42,7 @@ export default function Header({ label="", onClickBtn=()=>{}, checkValidUser=()=
   };
 
   const sendAccessToken = async(accessToken) => {
-    await fetch(`/server/api/user/login`, {
+    await fetch(`/server/api/login`, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
@@ -50,7 +53,7 @@ export default function Header({ label="", onClickBtn=()=>{}, checkValidUser=()=
     .then(data => {
       if(data.success) {
         if(router.isReady) {
-          socket.emit('setGitId', getCookie('jwt'), router?.query?.mode, router?.query?.roomId);
+          socket.emit('setGitId', router?.query?.mode, router?.query?.roomId);
           checkValidUser(true);
         }
       } else {
