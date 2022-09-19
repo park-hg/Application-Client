@@ -13,18 +13,14 @@ export default function Header({ label="", onClickBtn=()=>{}, checkValidUser=()=
 
   useLayoutEffect(() => {
     if(status === 'authenticated') {
-      if(hasCookie('jwt')) {
-        if(router.isReady) {
-          console.log('setting socket');
-          socket.auth.token = getCookie('jwt');
-          socket.connect();
-          socket.emit('setGitId', router?.query?.mode, router?.query?.roomId);
-          checkValidUser(true);
-        }
-      } else {
-        if(data.accessToken) {
-          sendAccessToken(data.accessToken);
-        }
+      if(router.isReady) {
+        // console.log('setting socket');
+        // socket.auth.token = getCookie('jwt');
+        // socket.connect();
+        socket.emit('setGitId', router?.query?.mode, router?.query?.roomId);
+        checkValidUser(true);
+      } else if (data.accessToken) {
+        sendAccessToken(data.accessToken);
       }
     } else if(status === 'unauthenticated') {
       deleteCookies();
@@ -48,8 +44,14 @@ export default function Header({ label="", onClickBtn=()=>{}, checkValidUser=()=
         'Content-Type': 'application/json',
         Authorization: accessToken,
       },
+      credentials: 'include'
     })
-    .then(res => res.json())
+    .then(res => {
+      console.log(res);
+      console.log('setting socket here!');
+      socket.connect();
+      return res.json();
+    })
     .then(data => {
       if(data.success) {
         if(router.isReady) {

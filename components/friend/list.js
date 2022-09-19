@@ -62,9 +62,9 @@ export default function FriendList({ onClick, players=null }) {
   }, [searchText]);
 
   const getFriends = async() => {
-    if(getCookie('jwt')) {
-      socket.emit('getFollowingList');
-    }
+    // if(getCookie('jwt')) {
+    socket.emit('getFollowingList');
+    // }
   };
 
   const getMyInfo = async() => {
