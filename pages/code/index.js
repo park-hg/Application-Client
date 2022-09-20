@@ -219,7 +219,7 @@ export default function Code() {
       },
     })
     .then(res => {
-      if(res.status === 403) {
+      if(res.status === 401) {
         router.replace({
           pathname: '/',
           query: { msg: 'loginTimeout' }
@@ -268,7 +268,7 @@ export default function Code() {
       })
     })
     .then(res => {
-      if(res.status === 403) {
+      if(res.status === 401) {
         router.replace({
           pathname: '/',
           query: { msg: 'loginTimeout' }
@@ -299,7 +299,7 @@ export default function Code() {
       })
     })
     .then(res => {
-      if(res.status === 403) {
+      if(res.status === 401) {
         router.replace({
           pathname: '/',
           query: { msg: 'loginTimeout' }
@@ -327,7 +327,7 @@ export default function Code() {
       })
     })
     .then(res => {
-      if(res.status === 403) {
+      if(res.status === 401) {
         router.replace({
           pathname: '/',
           query: { msg: 'loginTimeout' }

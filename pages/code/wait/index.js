@@ -200,7 +200,7 @@ export default function WaitPage() {
           })
         })
         .then(res => {
-          if(res.status === 403) {
+          if(res.status === 401) {
             router.replace({
               pathname: '/',
               query: { msg: 'loginTimeout' }

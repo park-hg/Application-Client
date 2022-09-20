@@ -13,22 +13,20 @@ export default function Header({ label="", onClickBtn=()=>{}, checkValidUser=()=
 
   useLayoutEffect(() => {
     if(status === 'authenticated') {
+      if (data.accessToken) sendAccessToken(data.accessToken);
       if(router.isReady) {
-        // console.log('setting socket');
-        // socket.auth.token = getCookie('jwt');
-        // socket.connect();
-        socket.emit('setGitId', router?.query?.mode, router?.query?.roomId);
-        checkValidUser(true);
-      } else if (data.accessToken) {
-        sendAccessToken(data.accessToken);
+        if (socket.connected) {
+          socket.emit('setGitId', router?.query?.mode, router?.query?.roomId);
+          checkValidUser(true);
+        }
       }
-    } else if(status === 'unauthenticated') {
+    } else if (status === 'unauthenticated') {
       deleteCookies();
     }
-  }, [status, router.isReady]);
+  }, [status, router.isReady, socket.connected]);
 
   const deleteCookies = () => {
-    deleteCookie('jwt');
+    // deleteCookie('jwt');
     deleteCookie('sidebar');
     checkValidUser(false);
   };
@@ -47,17 +45,13 @@ export default function Header({ label="", onClickBtn=()=>{}, checkValidUser=()=
       credentials: 'include'
     })
     .then(res => {
-      console.log(res);
-      console.log('setting socket here!');
-      socket.connect();
       return res.json();
     })
     .then(data => {
       if(data.success) {
-        if(router.isReady) {
-          socket.emit('setGitId', router?.query?.mode, router?.query?.roomId);
-          checkValidUser(true);
-        }
+        socket.connect();
+        socket.emit('setGitId', router?.query?.mode, router?.query?.roomId);
+        checkValidUser(true);
       } else {
         deleteCookies();
         signOut();
