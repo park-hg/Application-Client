@@ -2,7 +2,6 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
 import Image from 'next/image';
 import { useSession } from 'next-auth/react';
-import { getCookie } from 'cookies-next';
 import { socket } from '../../lib/socket';
 import Item from './item';
 import SearchItem from './searchItem';
@@ -54,7 +53,7 @@ export default function FriendList({ onClick, players=null }) {
 
   useEffect(() => {
     if(searchText === '') {
-      getMyInfo();
+      // getMyInfo();
       getFriends();
       setIsSearch(false);
       setSearchResultText('');
@@ -62,9 +61,7 @@ export default function FriendList({ onClick, players=null }) {
   }, [searchText]);
 
   const getFriends = async() => {
-    if(getCookie('jwt')) {
-      socket.emit('getFollowingList');
-    }
+    socket.emit('getFollowingList');
   };
 
   const getMyInfo = async() => {
@@ -75,7 +72,7 @@ export default function FriendList({ onClick, players=null }) {
       }
     })
     .then(res => {
-      if(res.status === 403) {
+      if(res.status === 401) {
         router.replace({
           pathname: '/',
           query: { msg: 'loginTimeout' }
@@ -102,7 +99,7 @@ export default function FriendList({ onClick, players=null }) {
       },
     })
     .then(res => {
-      if(res.status === 403) {
+      if(res.status === 401) {
         router.replace({
           pathname: '/',
           query: { msg: 'loginTimeout' }

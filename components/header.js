@@ -13,23 +13,20 @@ export default function Header({ label="", onClickBtn=()=>{}, checkValidUser=()=
 
   useLayoutEffect(() => {
     if(status === 'authenticated') {
-      if(hasCookie('jwt')) {
-        if(router.isReady) {
-          socket.emit('setGitId', getCookie('jwt'), router?.query?.mode, router?.query?.roomId);
+      if (data.accessToken) sendAccessToken(data.accessToken);
+      if(router.isReady) {
+        if (socket.connected) {
+          socket.emit('setGitId', router?.query?.mode, router?.query?.roomId);
           checkValidUser(true);
         }
-      } else {
-        if(data.accessToken) {
-          sendAccessToken(data.accessToken);
-        }
       }
-    } else if(status === 'unauthenticated') {
+    } else if (status === 'unauthenticated') {
       deleteCookies();
     }
-  }, [status, router.isReady]);
+  }, [status, router.isReady, socket.connected]);
 
   const deleteCookies = () => {
-    deleteCookie('jwt');
+    // deleteCookie('jwt');
     deleteCookie('sidebar');
     checkValidUser(false);
   };
@@ -39,20 +36,22 @@ export default function Header({ label="", onClickBtn=()=>{}, checkValidUser=()=
   };
 
   const sendAccessToken = async(accessToken) => {
-    await fetch(`/server/api/user/login`, {
+    await fetch(`/server/api/login`, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
         Authorization: accessToken,
       },
+      credentials: 'include'
     })
-    .then(res => res.json())
+    .then(res => {
+      return res.json();
+    })
     .then(data => {
       if(data.success) {
-        if(router.isReady) {
-          socket.emit('setGitId', getCookie('jwt'), router?.query?.mode, router?.query?.roomId);
-          checkValidUser(true);
-        }
+        socket.connect();
+        socket.emit('setGitId', router?.query?.mode, router?.query?.roomId);
+        checkValidUser(true);
       } else {
         deleteCookies();
         signOut();

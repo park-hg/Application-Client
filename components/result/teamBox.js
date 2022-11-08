@@ -23,7 +23,7 @@ export default function TeamResultBox({ ranks, startAt, onClickGoToMain }) {
       },
     })
     .then(res => {
-      if(res.status === 403) {
+      if(res.status === 401) {
         router.replace({
           pathname: '/',
           query: { msg: 'loginTimeout' }

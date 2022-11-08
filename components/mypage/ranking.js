@@ -45,7 +45,7 @@ export default function RankingBox() {
       },
     })
     .then(res => {
-      if(res.status === 403) {
+      if(res.status === 401) {
         router.replace({
           pathname: '/',
           query: { msg: 'loginTimeout' }
